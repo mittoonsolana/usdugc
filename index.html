@@ -7,18 +7,19 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Coin Rain Animation -->
-    <div class="coin-rain">
-        <div class="coin coin-1"></div>
-        <div class="coin coin-2"></div>
-        <div class="coin coin-3"></div>
-        <div class="coin coin-4"></div>
-        <div class="coin coin-5"></div>
-        <div class="coin coin-6"></div>
-        <div class="coin coin-7"></div>
-        <div class="coin coin-8"></div>
-        <div class="coin coin-9"></div>
-        <div class="coin coin-10"></div>
+    <!-- Live Data Tracking Popup -->
+    <div id="liveDataPopup" class="popup-overlay">
+        <div class="popup-modal">
+            <button class="popup-close" id="popupClose">&times;</button>
+            <div class="popup-content">
+                <h2 class="popup-title">🚀 Track Live $USDUGC Data</h2>
+                <p class="popup-message">You can track real-time data of $USDUGC here with live charts and market statistics. Want to see?</p>
+                <div class="popup-buttons">
+                    <button class="popup-btn popup-btn-yes" id="popupYes">Yes, Show Me!</button>
+                    <button class="popup-btn popup-btn-no" id="popupNo">No, Thanks</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <nav class="navbar">
@@ -40,6 +41,11 @@
                     <a href="#live-stats" class="nav-link doodle-text">Live Stats</a>
                 </li>
             </ul>
+            
+            <div class="nav-market-cap">
+                <div class="market-cap-value" id="nav-market-cap">$0</div>
+                <div class="market-cap-change" id="nav-market-cap-change">0%</div>
+            </div>
         </div>
     </nav>
 
@@ -87,10 +93,15 @@
                             <button class="copy-btn doodle-text" onclick="copyAddress()">Copy</button>
                         </div>
                         <span class="copy-feedback" id="copyFeedback">Copied!</span>
+                        <div class="warning-badge">
+                            <span class="warning-text">⚠️ Always Confirm Official CA Before Buying</span>
+                        </div>
                     </div>
                 </div>
                 <div class="about-image">
-                    <img src="golden man USDUGC coin rain.png" alt="Golden Man USDUGC Coin Rain" class="golden-man-img">
+                    <div class="image-container">
+                        <img src="golden man USDUGC coin rain.png" alt="Golden Man USDUGC Coin Rain" class="golden-man-img">
+                    </div>
                 </div>
             </div>
         </section>
@@ -149,8 +160,15 @@
                             <span class="symbol">$USDUGC</span>
                             <span class="name">Unstable Gold Coin</span>
                         </div>
-                        <div class="chain-badge">
-                            <span>🟣 Solana</span>
+                        <div class="header-actions">
+                            <div class="chain-badge">
+                                <span>🟣 Solana</span>
+                            </div>
+                            <button class="refresh-btn" onclick="refreshLiveStats()" title="Refresh Data">
+                                <svg class="refresh-icon" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                </svg>
+                            </button>
                         </div>
                     </div>
                     
@@ -171,14 +189,16 @@
                             <div class="stat-value" id="volume">$13K</div>
                         </div>
                         
-                        <div class="stat-item">
-                            <div class="stat-label">Transactions</div>
-                            <div class="stat-value" id="transactions">561</div>
+
+                    </div>
+                    
+                    <!-- DexScreener Chart Embed -->
+                    <div class="chart-section">
+                        <div class="chart-header">
+                            <h3 class="doodle-text chart-title">📈 Live Chart</h3>
                         </div>
-                        
-                        <div class="stat-item">
-                            <div class="stat-label">Total Holders</div>
-                            <div class="stat-value" id="holders">Loading...</div>
+                        <div id="dexscreener-embed">
+                            <iframe src="https://dexscreener.com/solana/AUroN1QhKdSnUVyYLsr8tCFsty1cXaWFyCkzRhaHPyX1?embed=1&loadChartSettings=0&trades=0&tabs=0&info=0&chartLeftToolbar=0&chartTimeframesToolbar=0&loadChartSettings=0&chartDefaultOnMobile=1&chartTheme=light&theme=light&chartStyle=1&chartType=marketCap&interval=5"></iframe>
                         </div>
                     </div>
                     
@@ -315,6 +335,43 @@
             });
         }
 
+        // Solscan Redirection Function
+        function openSolscan(walletAddress) {
+            const solscanUrl = `https://solscan.io/account/${walletAddress}`;
+            window.open(solscanUrl, '_blank');
+        }
+
+        // Refresh Live Stats Function
+        async function refreshLiveStats() {
+            const refreshBtn = document.querySelector('.refresh-btn');
+            
+            // Add spinning animation
+            refreshBtn.classList.add('refreshing');
+            refreshBtn.disabled = true;
+            
+            try {
+                // Call the existing fetch function
+                await fetchLiveStats();
+                
+                // Update last updated time
+                const lastUpdatedElement = document.getElementById('last-updated');
+                if (lastUpdatedElement) {
+                    const now = new Date();
+                    const timeString = now.toLocaleTimeString();
+                    lastUpdatedElement.textContent = `Last updated: ${timeString}`;
+                }
+                
+            } catch (error) {
+                console.error('Error refreshing stats:', error);
+            } finally {
+                // Remove spinning animation
+                setTimeout(() => {
+                    refreshBtn.classList.remove('refreshing');
+                    refreshBtn.disabled = false;
+                }, 500);
+            }
+        }
+
         // Live Stats Functionality
         async function fetchLiveStats() {
             try {
@@ -363,20 +420,7 @@
                 volumeElement.textContent = formatNumber(volume);
             }
 
-            // Update transactions
-            const transactionsElement = document.getElementById('transactions');
-            if (transactionsElement) {
-                const txns = data.txns?.h24 ? (data.txns.h24.buys + data.txns.h24.sells) : 561;
-                transactionsElement.textContent = txns.toString();
-            }
 
-            // Update total holders
-            const holdersElement = document.getElementById('holders');
-            if (holdersElement) {
-                // Display actual holder count
-                const holders = 65;
-                holdersElement.textContent = holders.toString();
-            }
 
             // Update price change
             const priceChangeElement = document.getElementById('price-change');
@@ -387,6 +431,36 @@
             } else if (priceChangeElement) {
                 priceChangeElement.textContent = 'N/A';
                 priceChangeElement.className = 'stat-change';
+            }
+
+            // Update navbar market cap
+            const navMarketCapElement = document.getElementById('nav-market-cap');
+            const navMarketCapChangeElement = document.getElementById('nav-market-cap-change');
+            
+            if (navMarketCapElement) {
+                const marketCap = data.fdv || data.marketCap || 12000;
+                navMarketCapElement.textContent = `$${formatNumber(marketCap)}`;
+            }
+            
+            if (navMarketCapChangeElement && data.priceChange?.h24 !== undefined) {
+                const change = data.priceChange.h24;
+                navMarketCapChangeElement.textContent = `${change > 0 ? '+' : ''}${change.toFixed(2)}%`;
+                
+                // Remove existing classes
+                navMarketCapChangeElement.classList.remove('positive', 'negative', 'neutral');
+                
+                // Add appropriate class based on change
+                if (change > 0) {
+                    navMarketCapChangeElement.classList.add('positive');
+                } else if (change < 0) {
+                    navMarketCapChangeElement.classList.add('negative');
+                } else {
+                    navMarketCapChangeElement.classList.add('neutral');
+                }
+            } else if (navMarketCapChangeElement) {
+                navMarketCapChangeElement.textContent = '0%';
+                navMarketCapChangeElement.classList.remove('positive', 'negative');
+                navMarketCapChangeElement.classList.add('neutral');
             }
 
             // Update last updated time
@@ -434,6 +508,72 @@
                         });
                     }
                 });
+            });
+        });
+
+        // Live Data Popup Functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const popup = document.getElementById('liveDataPopup');
+            const closeBtn = document.getElementById('popupClose');
+            const yesBtn = document.getElementById('popupYes');
+            const noBtn = document.getElementById('popupNo');
+            
+            // Check if popup was already shown in this session
+            const popupShown = sessionStorage.getItem('popupShown');
+            
+            if (!popupShown) {
+                // Show popup after a short delay
+                setTimeout(() => {
+                    popup.classList.add('show');
+                }, 1000);
+                
+                // Auto-hide popup after 5 minutes (300,000 milliseconds)
+                setTimeout(() => {
+                    hidePopup();
+                }, 300000);
+            }
+            
+            function hidePopup() {
+                popup.classList.remove('show');
+                sessionStorage.setItem('popupShown', 'true');
+            }
+            
+            function scrollToLiveStats() {
+                const liveStatsSection = document.getElementById('live-stats');
+                if (liveStatsSection) {
+                    liveStatsSection.scrollIntoView({ 
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            }
+            
+            // Close button event
+            closeBtn.addEventListener('click', hidePopup);
+            
+            // Yes button event - scroll to live stats and hide popup
+            yesBtn.addEventListener('click', function() {
+                hidePopup();
+                setTimeout(() => {
+                    scrollToLiveStats();
+                }, 300);
+            });
+            
+            // No button event - just hide popup
+            noBtn.addEventListener('click', hidePopup);
+            
+            // Close popup when clicking outside the modal
+            popup.addEventListener('click', function(e) {
+                if (e.target === popup) {
+                    hidePopup();
+                }
+            });
+            
+            // Close popup with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && popup.classList.contains('show')) {
+                    hidePopup();
+                }
             });
         });
 
