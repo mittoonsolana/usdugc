@@ -7,21 +7,6 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Live Data Tracking Popup -->
-    <div id="liveDataPopup" class="popup-overlay">
-        <div class="popup-modal">
-            <button class="popup-close" id="popupClose">&times;</button>
-            <div class="popup-content">
-                <h2 class="popup-title">🚀 Track Live $USDUGC Data</h2>
-                <p class="popup-message">You can track real-time data of $USDUGC here with live charts and market statistics. Want to see?</p>
-                <div class="popup-buttons">
-                    <button class="popup-btn popup-btn-yes" id="popupYes">Yes, Show Me!</button>
-                    <button class="popup-btn popup-btn-no" id="popupNo">No, Thanks</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <nav class="navbar">
         <div class="nav-container">
             <div class="nav-logo">
@@ -84,7 +69,8 @@
                 <div class="about-content">
                     <h2 class="doodle-text about-title">About USDUGC</h2>
                     <p class="about-description">
-                        USDUGC — Unstable Goldcoin — redefines stability in crypto. Unlike typical coins that chase steady value, USDUGC embraces controlled volatility, turning market swings into opportunities. Conceptually tied to gold and powered by its community, it represents the perfect blend of chaos, value, and opportunity.
+                        USDUGC — The First Official Unstable Goldcoin — This token is a direct follow up to the original USDUC coin. It combines the Unstable Coin ($USDUC) with the Gold Meta making it a TRUE Classic Collector Coin.
+
                     </p>
                     <div class="contract-address">
                         <h3 class="doodle-text contract-title">Contract Address</h3>
@@ -508,72 +494,6 @@
                         });
                     }
                 });
-            });
-        });
-
-        // Live Data Popup Functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const popup = document.getElementById('liveDataPopup');
-            const closeBtn = document.getElementById('popupClose');
-            const yesBtn = document.getElementById('popupYes');
-            const noBtn = document.getElementById('popupNo');
-            
-            // Check if popup was already shown in this session
-            const popupShown = sessionStorage.getItem('popupShown');
-            
-            if (!popupShown) {
-                // Show popup after a short delay
-                setTimeout(() => {
-                    popup.classList.add('show');
-                }, 1000);
-                
-                // Auto-hide popup after 5 minutes (300,000 milliseconds)
-                setTimeout(() => {
-                    hidePopup();
-                }, 300000);
-            }
-            
-            function hidePopup() {
-                popup.classList.remove('show');
-                sessionStorage.setItem('popupShown', 'true');
-            }
-            
-            function scrollToLiveStats() {
-                const liveStatsSection = document.getElementById('live-stats');
-                if (liveStatsSection) {
-                    liveStatsSection.scrollIntoView({ 
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            }
-            
-            // Close button event
-            closeBtn.addEventListener('click', hidePopup);
-            
-            // Yes button event - scroll to live stats and hide popup
-            yesBtn.addEventListener('click', function() {
-                hidePopup();
-                setTimeout(() => {
-                    scrollToLiveStats();
-                }, 300);
-            });
-            
-            // No button event - just hide popup
-            noBtn.addEventListener('click', hidePopup);
-            
-            // Close popup when clicking outside the modal
-            popup.addEventListener('click', function(e) {
-                if (e.target === popup) {
-                    hidePopup();
-                }
-            });
-            
-            // Close popup with Escape key
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && popup.classList.contains('show')) {
-                    hidePopup();
-                }
             });
         });
 
